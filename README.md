@@ -119,6 +119,6 @@ The analysis converts raw sales data into **clear business trends and visual ins
 
 **Preetham**
 
-BCA | Data Analytics & Machine Learning
+BCA | Data Analytics 
 
 **Skills:** Excel • SQL • MySQL • Power BI • Data Analysis
