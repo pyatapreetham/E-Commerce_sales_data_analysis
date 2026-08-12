@@ -1,0 +1,353 @@
+-- =========================================
+-- 1. ENABLE LOCAL INFILE
+-- =========================================
+
+SET GLOBAL local_infile = 1;
+
+
+-- =========================================
+-- 2. CREATE DATABASE
+-- =========================================
+
+CREATE DATABASE IF NOT EXISTS superstore;
+
+USE superstore;
+
+
+-- =========================================
+-- 3. DROP EXISTING TABLE
+-- =========================================
+
+DROP TABLE IF EXISTS orders;
+
+
+-- =========================================
+-- 4. CREATE ORDERS TABLE
+-- =========================================
+
+CREATE TABLE orders (
+    order_id VARCHAR(50),
+    order_date DATE,
+    ship_date DATE,
+    ship_mode VARCHAR(50),
+    customer_name VARCHAR(100),
+    segment VARCHAR(50),
+    state VARCHAR(100),
+    country VARCHAR(100),
+    market VARCHAR(50),
+    region VARCHAR(50),
+    product_id VARCHAR(50),
+    category VARCHAR(50),
+    sub_category VARCHAR(50),
+    product_name VARCHAR(255),
+    sales DECIMAL(12,2),
+    quantity INT,
+    discount DECIMAL(5,2),
+    profit DECIMAL(12,2),
+    shipping_cost DECIMAL(12,2),
+    order_priority VARCHAR(20),
+    year INT,
+    Month INT,
+    Month_name VARCHAR(20)
+);
+
+
+-- =========================================
+-- 5. DESCRIBE TABLE
+-- =========================================
+
+DESC orders;
+
+
+-- =========================================
+-- 6. IMPORT CSV DATA
+-- =========================================
+
+LOAD DATA LOCAL INFILE 'C:/Users/PREETHI/OneDrive/Desktop/PrimeOR solutions/cleaned_dataset(task1).csv'
+INTO TABLE orders
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+
+-- =========================================
+-- 7. VERIFY IMPORT
+-- =========================================
+
+SELECT COUNT(*) AS total_rows
+FROM orders;
+
+SELECT *
+FROM orders
+LIMIT 5;
+
+
+-- =========================================
+-- 8. TOP 10 PROFITABLE PRODUCTS
+-- =========================================
+
+SELECT 
+    product_name,
+    ROUND(SUM(profit),0) AS total_profit
+FROM orders
+GROUP BY product_name
+ORDER BY total_profit DESC
+LIMIT 10;
+
+-- TOP 10 CUSTOMERS BY SALES 
+
+SELECT CUSTOMER_NAME , SUM(SALES)AS TOTAL_SALES
+FROM ORDERS
+GROUP BY CUSTOMER_NAME
+ORDER BY TOTAL_SALES DESC
+LIMIT 10;
+
+-- REGION BASED ANALYSIS
+
+-- TOTAL SALES 
+
+SELECT REGION , SUM(SALES)AS TOTAL_SALES
+FROM ORDERS
+GROUP BY REGION
+ORDER BY TOTAL_SALES;
+
+-- TOTAL PROFITS
+
+SELECT REGION , SUM(PROFIT)AS TOTAL_PROFIT
+FROM ORDERS
+GROUP BY REGION
+ORDER BY TOTAL_PROFIT DESC;
+
+--  REGION WISE DISCOUNT 
+
+SELECT REGION , ROUND(AVG(DISCOUNT),2)AS AVG_DISCOUNT
+FROM ORDERS
+group by REGION
+ORDER BY AVG_DISCOUNT;
+
+
+-- AVG SHIPPING COST IN THE EACH REGION 
+
+SELECT REGION , ROUND(AVG(SHIPPING_COST),2)AS AVG_SHIPPING_COST
+FROM ORDERS
+GROUP BY REGION
+ORDER BY AVG_SHIPPING_COST;
+
+-- CATEGORY BASED ANALYSIS 
+
+-- TOTAL SALES 
+
+SELECT CATEGORY , SUM(SALES)AS TOTAL_SALES
+FROM ORDERS
+GROUP BY CATEGORY
+ORDER BY TOTAL_SALES;
+
+-- TOTAL PROFITS
+
+SELECT CATEGORY , SUM(PROFIT)AS TOTAL_PROFIT
+FROM ORDERS
+GROUP BY CATEGORY
+ORDER BY TOTAL_PROFIT DESC;
+
+--  REGION WISE DISCOUNT 
+
+SELECT CATEGORY , ROUND(AVG(DISCOUNT),2)AS AVG_DISCOUNT
+FROM ORDERS
+group by CATEGORY
+ORDER BY AVG_DISCOUNT;
+
+-- AVG SHIPPING COST IN THE EACH CATEGORY
+
+SELECT REGION , ROUND(AVG(SHIPPING_COST),2)AS AVG_SHIPPING_COST
+FROM ORDERS
+GROUP BY REGION
+ORDER BY AVG_SHIPPING_COST;
+
+
+-- NEGATIVE PROFITS
+
+SELECT 
+  COUNT(ORDER_ID)AS TOTAL_ORDERS
+  FROM ORDERS
+  WHERE PROFIT < 0;
+  
+  -- NOW COMPARISION BETWEEN YEARS 
+
+SELECT 
+    YEAR(order_date) AS year,
+    COUNT(order_id) AS negative_profit_orders
+FROM orders
+WHERE profit < 0
+GROUP BY YEAR(order_date)
+ORDER BY year;
+
+
+-- YEARLY SALES TREND 
+
+SELECT YEAR(ORDER_DATE)AS YEAR,
+SUM(SALES)AS TOTAL_SALES
+FROM ORDERS
+GROUP BY YEAR(ORDER_DATE)
+ORDER BY YEAR(ORDER_DATE);
+
+-- MONTHLY SALES TREND FOR YEAR 2011
+
+SELECT 
+    MONTHNAME(order_date) AS month_name,
+    MONTH(order_date) AS month_no,
+    COUNT(order_id) AS total_orders,
+    SUM(sales) AS total_sales,
+    SUM(profit) AS total_profit,
+    ROUND(AVG(discount), 2) AS avg_discount,
+    ROUND(AVG(shipping_cost), 2) AS avg_shipping_cost
+FROM orders
+WHERE YEAR(order_date) = 2011
+GROUP BY 
+    MONTH(order_date),
+    MONTHNAME(order_date)
+ORDER BY month_no;
+
+-- MONTHLY SALES TREND FOR YEAR 2012
+
+SELECT 
+    MONTHNAME(order_date) AS month_name,
+    MONTH(order_date) AS month_no,
+    COUNT(order_id) AS total_orders,
+    SUM(sales) AS total_sales,
+    SUM(profit) AS total_profit,
+    ROUND(AVG(discount), 2) AS avg_discount,
+    ROUND(AVG(shipping_cost), 2) AS avg_shipping_cost
+FROM orders
+WHERE YEAR(order_date) = 2012
+GROUP BY 
+    MONTH(order_date),
+    MONTHNAME(order_date)
+ORDER BY month_no;
+
+-- MONTHLY SALES TREND FOR YEAR 2013
+
+SELECT 
+    MONTHNAME(order_date) AS month_name,
+    MONTH(order_date) AS month_no,
+    COUNT(order_id) AS total_orders,
+    SUM(sales) AS total_sales,
+    SUM(profit) AS total_profit,
+    ROUND(AVG(discount), 2) AS avg_discount,
+    ROUND(AVG(shipping_cost), 2) AS avg_shipping_cost
+FROM orders
+WHERE YEAR(order_date) = 2013
+GROUP BY 
+    MONTH(order_date),
+    MONTHNAME(order_date)
+ORDER BY month_no;
+
+-- MONTHLY SALES TREND FOR YEAR 2014
+
+SELECT 
+    MONTHNAME(order_date) AS month_name,
+    MONTH(order_date) AS month_no,
+    COUNT(order_id) AS total_orders,
+    SUM(sales) AS total_sales,
+    SUM(profit) AS total_profit,
+    ROUND(AVG(discount), 2) AS avg_discount,
+    ROUND(AVG(shipping_cost), 2) AS avg_shipping_cost
+FROM orders
+WHERE YEAR(order_date) = 2014
+GROUP BY 
+    MONTH(order_date),
+    MONTHNAME(order_date)
+ORDER BY month_no;
+
+-- MARKET ANALYSIS 
+
+SELECT MARKET , SUM(PROFIT)AS TOTAL_REVENUE
+FROM ORDERS
+GROUP BY MARKET
+ORDER BY TOTAL_REVENUE;
+
+-- YEARLY COMPARISONS 
+
+SELECT MARKET,
+SUM(CASE WHEN YEAR(ORDER_DATE)='2011' THEN SALES ELSE 0 END)AS REVENUE_2011,
+SUM(CASE WHEN YEAR(ORDER_DATE)='2012' THEN SALES ELSE 0 END)AS REVENUE_2012,
+SUM(CASE WHEN YEAR(ORDER_DATE)='2013' THEN SALES ELSE 0 END)AS REVENUE_2013,
+SUM(CASE WHEN YEAR(ORDER_DATE)='2014' THEN SALES ELSE 0 END)AS REVENUE_2014,
+SUM(SALES)AS TOTAL_REVENUE
+FROM ORDERS
+GROUP BY MARKET
+ORDER BY TOTAL_REVENUE;
+
+-- SUB-CATEGORY ANALYSIS
+
+-- Total Revenue 
+
+SELECT SUB_CATEGORY,
+ROUND(SUM(SALES),0)AS TOTAL_REVENUE
+FROM ORDERS
+GROUP BY SUB_CATEGORY
+ORDER BY TOTAL_REVENUE DESC;
+
+-- Total Profits
+
+SELECT SUB_CATEGORY,
+ROUND(SUM(Profit),0)AS TOTAL_PROFIT
+FROM ORDERS
+GROUP BY SUB_CATEGORY
+ORDER BY TOTAL_PROFIT DESC;
+
+-- YEARLY COMPARISIONS 
+
+SELECT SUB_CATEGORY,
+SUM(CASE WHEN YEAR(ORDER_DATE)='2011' THEN SALES ELSE 0 END)AS REVENUE_2011,
+SUM(CASE WHEN YEAR(ORDER_DATE)='2012' THEN SALES ELSE 0 END)AS REVENUE_2012,
+SUM(CASE WHEN YEAR(ORDER_DATE)='2013' THEN SALES ELSE 0 END)AS REVENUE_2013,
+SUM(CASE WHEN YEAR(ORDER_DATE)='2014' THEN SALES ELSE 0 END)AS REVENUE_2014,
+SUM(SALES)AS TOTAL_REVENUE
+FROM ORDERS
+GROUP BY SUB_CATEGORY
+ORDER BY TOTAL_REVENUE;
+
+
+--  PROFIT YEARLY COMPARISONS 
+
+SELECT SUB_CATEGORY,
+SUM(CASE WHEN YEAR(ORDER_DATE)='2011' THEN PROFIT ELSE 0 END)AS PROFIT_2011,
+SUM(CASE WHEN YEAR(ORDER_DATE)='2012' THEN PROFIT ELSE 0 END)AS PROFIT_2012,
+SUM(CASE WHEN YEAR(ORDER_DATE)='2013' THEN PROFIT ELSE 0 END)AS PROFIT_2013,
+SUM(CASE WHEN YEAR(ORDER_DATE)='2014' THEN PROFIT ELSE 0 END)AS PROFIT_2014,
+SUM(SALES)AS TOTAL_REVENUE
+FROM ORDERS
+GROUP BY SUB_CATEGORY
+ORDER BY TOTAL_REVENUE;
+
+-- TOP 3 PERFORMING CATEGORIES IN SALES , PROFITS
+
+SELECT 
+    sub_category,
+    SUM(sales) AS total_revenue
+FROM orders
+WHERE sub_category IS NOT NULL
+  AND TRIM(sub_category) <> ''
+GROUP BY sub_category
+ORDER BY total_revenue DESC
+limit 3;
+
+-- SHIP MODE ANALYSIS 
+
+-- MOST USED SHIP MODES OVERALL
+
+SELECT SHIP_MODE , COUNT(ORDER_ID)AS TOTAL_ORDERS
+FROM ORDERS
+GROUP BY SHIP_MODE
+ORDER BY TOTAL_ORDERS DESC;
+
+-- SHIPPING MODE AND AVG SHIPPING COST
+
+SELECT SHIP_MODE ,ROUND(AVG(SHIPPING_COST),2)AS SHIPPING_COST
+FROM ORDERS
+GROUP BY SHIP_MODE
+ORDER BY SHIPPING_COST;
+
+
+
